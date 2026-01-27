@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Photo Timeline Map</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Tel Aviv-ish default view
+        const map = L.map('map').setView([32.0853, 34.7818], 12);
+        
+        function addMarker(photo){
+            const marker = L.marker([photo.lat, photo.lon]).addTo(map);
+            marker.bindPopup(`<h2>${photo.name}</h2><br>${photo.time}<img src="/${photo.image_url}" style="width:220px;border-radius:10px;margin-top:6px;" />`);
+        }
+        // function addPhoto(photo){
+        //     //const pic = ''
+        // }
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        // 👇 JSON test (no map logic yet)
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                console.log('JSON loaded:', data);
+                for(let i = 0; i < data.length; i++){
+                    photo = data[i];
+                    console.log(photo);
+                    addMarker(photo);
+                }
+            
+            });
+    </script>
+</body>
+
+</html>
