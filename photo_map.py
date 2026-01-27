@@ -38,40 +38,39 @@ def export_to_csv(data_list):
         print('dict: ' , d)
     
     
+def get_all_locations():
+    data = []
 
-data = []
+    photo_path = Path("static/photos")
+    if not photo_path.exists():
+        print ("Folder not found")
+    else:
+        print("Yay folder is here!!")
+    for p in photo_path.iterdir():
+        print(p)
+        if p.is_file() and p.suffix.lower() in [".jpg", ".jpeg", ".png", ".heic"]:
+            with open(p, "rb") as photo:
+                photo_item = {}
+                tags = exifread.process_file(photo)
+                #print(tags.get('EXIF DateTimeOriginal'))
+                #print(_convert_to_degress(tags.get('GPS GPSLatitude')))
+                #print(_convert_to_degress(tags.get('GPS GPSLongitude')))
+                photo_item['lat'] = _convert_to_degress(tags.get('GPS GPSLatitude'), str(tags.get('GPSLatitudeRef')))
+                photo_item['lon'] = _convert_to_degress(tags.get('GPS GPSLongitude'), str(tags.get('GPSLongitudeRef')))
+                photo_item['time'] = str(tags.get('EXIF DateTimeOriginal'))
+                photo_item['name'] = p.stem
+                photo_item['image_url'] = str(p)
 
-photo_path = Path("Iphone pics")
-if not photo_path.exists():
-    print ("Folder not found")
-else:
-      print("Yay folder is here!!")
-for p in photo_path.iterdir():
-    print(p)
-    if p.is_file() and p.suffix.lower() in [".jpg", ".jpeg", ".png", ".heic"]:
-        with open(p, "rb") as photo:
-            photo_item = {}
-            tags = exifread.process_file(photo)
-            #print(tags.get('EXIF DateTimeOriginal'))
-            #print(_convert_to_degress(tags.get('GPS GPSLatitude')))
-            #print(_convert_to_degress(tags.get('GPS GPSLongitude')))
-            photo_item['lat'] = _convert_to_degress(tags.get('GPS GPSLatitude'), str(tags.get('GPSLatitudeRef')))
-            photo_item['lon'] = _convert_to_degress(tags.get('GPS GPSLongitude'), str(tags.get('GPSLongitudeRef')))
-            photo_item['time'] = str(tags.get('EXIF DateTimeOriginal'))
-            photo_item['name'] = p.stem
+                #print(photo_item)
+                data.append(photo_item)
+    data.sort(key=get_time)
+    return data
+
+                
             
-            #print(photo_item)
-            data.append(photo_item)
+#print("//////////////////////////////////////////////")
+#print(data)
             
-print("//////////////////////////////////////////////")
-print(data)
-            
-data.sort(key=get_time)
-export_to_csv(data)
+#data.sort(key=get_time)
+#export_to_csv(data)
 #print(f"\n Sorted data: \n\n{data}")
-
-            
-            
-
-
-
